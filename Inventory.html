@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>HTM PROJECT | Hospital Inventory Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; width: 100%; }
+        .login-container {
+            background:white;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+            max-width: 1100px;
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.5s ease;
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .login-left-panel {
+            flex: 1.2;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 50px 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .login-left-panel h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 20px; line-height: 1.3; }
+        .group-badge {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+            padding: 12px 24px;
+            display: inline-block;
+            width: fit-content;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 20px;
+        }
+        .login-right-panel { flex: 1; padding: 50px 40px; background: white; }
+        .login-title { font-size: 2rem; font-weight: 700; color: #1e3c72; margin-bottom: 30px; text-align: center; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: 600; color: #2d3748; margin-bottom: 8px; font-size: 0.9rem; }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1.5px solid #e2e8f0;
+            font-size: 0.95rem;
+            background: #fafbfc;
+            transition: border 0.2s;
+        }
+        .input-group input:focus, .input-group select:focus { outline: none; border-color: #2a5298; }
+        .btn-login {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+        .btn-login:hover { transform: translateY(-2px); }
+        .contact-admin {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: #4a5568;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+        .contact-admin a {
+            color: #2a5298;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .contact-admin a:hover { text-decoration: underline; }
+        .error-msg { color: #e53e3e; font-size: 0.85rem; text-align: center; margin-top: 12px; background: #fff5f5; padding: 10px; border-radius: 12px; font-weight: 500; }
+        .dashboard { display: none; width: 100%; max-width: 1600px; margin: 0 auto; animation: fadeInUp 0.4s ease; }
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px;
+            padding: 20px 30px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .dashboard-header h2 { color: white; font-size: 1.6rem; font-weight: 700; }
+        .user-info-area { display: flex; align-items: center; gap: 20px; background: rgba(255,255,255,0.2); padding: 8px 20px; border-radius: 50px; }
+        .role-badge { background: #ffd93d; color: #2d3748; padding: 6px 16px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; }
+        .logout-btn { background: #ff6b6b; border: none; color: white; padding: 8px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .logout-btn:hover { background: #ff4757; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: white; border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-icon { width: 55px; height: 55px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 18px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; }
+        .stat-info h3 { font-size: 0.85rem; color: #718096; margin-bottom: 5px; }
+        .stat-info .number { font-size: 2rem; font-weight: 800; color: #2d3748; }
+        .action-bar { background: white; border-radius: 20px; padding: 20px 25px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .action-buttons { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+        .action-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 22px; border-radius: 40px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: transform 0.2s; }
+        .action-btn:hover { transform: translateY(-2px); }
+        .maintenance-btn { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .report-btn { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .users-btn { background: linear-gradient(135deg, #3b82f6, #1e3a8a); }
+        .search-section { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+        .search-input-wrapper { flex: 2; min-width: 200px; position: relative; }
+        .search-input-wrapper input { width: 100%; padding: 12px 16px; border-radius: 40px; border: 1.5px solid #e2e8f0; font-size: 0.9rem; padding-left: 40px; }
+        .search-input-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #a0aec0; }
+        .filter-group { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .filter-group select, .filter-group input { padding: 10px 16px; border-radius: 40px; border: 1.5px solid #e2e8f0; font-size: 0.85rem; background: white; min-width: 140px; }
+        .reset-filters { background: #e2e8f0; border: none; padding: 10px 20px; border-radius: 40px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+        .table-wrapper { background: white; border-radius: 24px; overflow-x: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .inventory-table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        .inventory-table th { background: linear-gradient(135deg, #f8f9fc, #f1f3f8); padding: 16px 12px; text-align: left; font-weight: 700; color: #2d3748; border-bottom: 2px solid #e2e8f0; }
+        .inventory-table td { padding: 14px 12px; border-bottom: 1px solid #edf2f7; font-size: 0.85rem; }
+        .condition-badge { display: inline-block; padding: 4px 12px; border-radius: 30px; font-size: 0.75rem; font-weight: 600; }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; font-weight: 700; margin-left: 6px; }
+        .action-icons i { margin: 0 6px; cursor: pointer; font-size: 1.1rem; padding: 6px; border-radius: 8px; transition: 0.2s; }
+        .action-icons i.fa-edit:hover { background: #e6f7ff; color: #1890ff; }
+        .action-icons i.fa-file-alt:hover { background: #f6ffed; color: #52c41a; }
+        .action-icons i.fa-tools:hover { background: #fff7e6; color: #fa8c16; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-content { background: white; max-width: 1000px; width: 90%; max-height: 85vh; overflow-y: auto; border-radius: 28px; padding: 30px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 1.5rem; font-weight: 700; color: #1e3c72; }
+        .close-modal { font-size: 28px; cursor: pointer; color: #718096; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+        .form-field.full-width { grid-column: span 2; }
+        .form-field label { font-weight: 600; font-size: 0.75rem; text-transform: uppercase; color: #4a5568; }
+        .form-field input, .form-field select, .form-field textarea { padding: 10px 14px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 0.9rem; }
+        .btn-save { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; border: none; width: 100%; padding: 14px; border-radius: 40px; font-weight: 700; margin-top: 20px; cursor: pointer; }
+        .maintenance-log-entry { background: #f8f9fc; border-radius: 12px; padding: 15px; margin-bottom: 12px; border-left: 4px solid #2a5298; }
+        .report-actions { display: flex; gap: 12px; margin-top: 15px; }
+        .report-actions button { flex: 1; padding: 12px; border-radius: 40px; font-weight: 600; cursor: pointer; border: none; }
+        .manual-group { background: #f8fafc; border-radius: 16px; padding: 16px; margin-top: 8px; margin-bottom: 8px; border: 1px solid #e2e8f0; }
+        .manual-row { display: grid; grid-template-columns: 1fr 0.5fr 1fr; gap: 12px; margin-bottom: 10px; align-items: center; }
+        .users-list { margin-top: 20px; border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+        .users-list th, .users-list td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .users-list th { background: #f1f5f9; font-weight: 700; }
+        .status-badge-user { display: inline-block; padding: 4px 10px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; }
+        .status-active { background: #d4edda; color: #155724; }
+        .status-inactive { background: #f8d7da; color: #721c24; }
+        .perm-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; margin-left: 6px; }
+        .perm-yes { background: #cce5ff; color: #004085; }
+        .perm-no { background: #f8d7da; color: #721c24; }
+        .action-user-btn { background: none; border: none; cursor: pointer; font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; margin: 0 2px; transition: 0.2s; }
+        .action-user-btn.toggle-perm { background: #28a745; color: white; }
+        .action-user-btn.toggle-perm:hover { background: #218838; }
+        .action-user-btn.toggle-status { background: #ffc107; color: #2d3748; }
+        .action-user-btn.toggle-status:hover { background: #e0a800; }
+        .role-display { font-weight: 600; }
+        .location-subnote { font-size: 0.7rem; color: #718096; margin-top: 4px; display: block; }
+        @media (max-width: 768px) {
+            .login-container { flex-direction: column; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-field.full-width { grid-column: span 1; }
+            .manual-row { grid-template-columns: 1fr; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+<div class="login-wrapper" id="loginWrapper">
+    <div class="login-container">
+        <div class="login-left-panel">
+            <h1><i class="fas fa-hospital-user"></i><br>Hospital Inventory<br>Management System</h1>
+            <p></p>
+            <div class="group-badge"><i class="fas fa-users"></i> BY GROUP 1 </div>
+        </div>
+        <div class="login-right-panel">
+            <div class="login-title"><i class="fas fa-key"></i> Login</div>
+            <div class="input-group"><label><i class="fas fa-user"></i> Username</label><input type="text" id="loginUsername" placeholder="Enter your username"></div>
+            <div class="input-group"><label><i class="fas fa-lock"></i> Password</label><input type="password" id="loginPassword" placeholder="Enter your password"></div>
+            <button class="btn-login" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Login</button>
+            <div class="contact-admin">
+                <i class="fas fa-headset"></i> Don't have an account? <a href="#" id="contactAdminLink">Contact the Administrator</a>
+            </div>
+            <div id="loginErrorMsg" class="error-msg"></div>
+        </div>
+    </div>
+</div>
+
+<div id="dashboard" class="dashboard">
+    <div class="dashboard-header">
+        <h2><i class="fas fa-notes-medical"></i> Inventory Dashboard</h2>
+        <div class="user-info-area"><span id="userRoleDisplay" class="role-badge">Admin</span><button id="logoutDashboardBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
+    </div>
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon"><i class="fas fa-microscope"></i></div><div class="stat-info"><h3>Total Equipment</h3><div class="number" id="statTotal">0</div></div></div>
+        <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-info"><h3>Operable</h3><div class="number" id="statOperable">0</div></div></div>
+        <div class="stat-card"><div class="stat-icon"><i class="fas fa-tools"></i></div><div class="stat-info"><h3>Needs Maintenance</h3><div class="number" id="statMaintenance">0</div></div></div>
+        <div class="stat-card"><div class="stat-icon"><i class="fas fa-map-marker-alt"></i></div><div class="stat-info"><h3>Active Locations</h3><div class="number" id="statLocations">0</div></div></div>
+    </div>
+    <div class="action-bar">
+        <div class="action-buttons" id="actionButtons"></div>
+        <div class="search-section">
+            <div class="search-input-wrapper"><i class="fas fa-search"></i><input type="text" id="globalSearchInput" placeholder="Search by code, type, manufacturer, model, serial..."></div>
+            <div class="filter-group">
+                <select id="filterEquipmentType"><option value="">All Equipment Types</option></select>
+                <select id="filterLocation"><option value="">All Locations</option></select>
+                <select id="filterCondition"><option value="">All Conditions</option><option>Operable and in service</option><option>Operable and out of service</option><option>Needs maintenance</option><option>Not repairable</option></select>
+                <select id="filterLifecycleStatus"><option value="active">Show Active Only</option><option value="all">Show All (including Decommissioned/Disposed)</option></select>
+                <button class="reset-filters" id="resetFiltersBtn"><i class="fas fa-undo"></i> Reset</button>
+            </div>
+        </div>
+    </div>
+    <div class="table-wrapper"><table class="inventory-table"><thead><tr><th>Inv Code</th><th>Equipment Type</th><th>Manufacturer</th><th>Model</th><th>Serial #</th><th>Condition</th><th>Location</th><th>Status</th><th>Actions</th></tr></thead><tbody id="tableBody"></tbody></table></div>
+</div>
+
+<!-- Modals -->
+<div id="equipmentModal" class="modal"><div class="modal-content"><div class="modal-header"><span id="modalTitle"><i class="fas fa-plus-circle"></i> Register Equipment</span><span class="close-modal" id="closeModalBtn">&times;</span></div><form id="equipmentForm"><input type="hidden" id="editId"><div class="form-grid"><div class="form-field"><label>Inventory Code *</label><input type="text" id="invCode" required></div><div class="form-field"><label>Equipment Type *</label><input type="text" id="eqType" required></div><div class="form-field"><label>Manufacturer</label><input type="text" id="manufacturer"></div><div class="form-field"><label>Model</label><input type="text" id="model"></div><div class="form-field"><label>Serial Number</label><input type="text" id="serialNumber"></div><div class="form-field"><label>Country of Origin</label><input type="text" id="countryOrigin"></div><div class="form-field"><label>Year of Manufacture</label><input type="number" id="yearMfg"></div><div class="form-field"><label>Power Requirement</label><select id="powerReq"><option>220V</option><option>110V</option></select></div><div class="form-field"><label>Operational Condition *</label><select id="condition"><option>Operable and in service</option><option>Operable and out of service</option><option>Needs maintenance</option><option>Not repairable</option></select></div><div class="form-field"><label>Lifecycle Status *</label><select id="lifecycleStatus"><option value="Active">Active</option><option value="Decommissioned">Decommissioned</option><option value="Disposed">Disposed</option></select></div>
+<div class="form-field"><label>Location (Block / Room Number) *</label><input type="text" id="location" placeholder="e.g., Block A / Room 204, ICU North / Suite 12" required><small class="location-subnote"><i class="fas fa-building"></i> Specify block/department and room number</small></div>
+<div class="form-field"><label>Equipment Users</label><input type="text" id="equipUsers"></div><div class="form-field"><label>Spare Parts</label><select id="spareParts"><option>No</option><option>Yes</option></select></div><div class="form-field"><label>Discard?</label><select id="discard"><option>No</option><option>Yes</option></select></div><div class="form-field full-width"><label>Manual Availability</label><div class="manual-group"><h4><i class="fas fa-user-md"></i> User Manual</h4><div class="manual-row"><input type="text" id="userManualName" placeholder="Title" value="User Manual"><input type="text" id="userManualCopies" placeholder="Copies"><input type="text" id="userManualLocation" placeholder="Location"></div></div><div class="manual-group"><h4><i class="fas fa-wrench"></i> Service Manual</h4><div class="manual-row"><input type="text" id="serviceManualName" placeholder="Title" value="Service Manual"><input type="text" id="serviceManualCopies" placeholder="Copies"><input type="text" id="serviceManualLocation" placeholder="Location"></div></div><div class="manual-group"><h4><i class="fas fa-ellipsis-h"></i> Other</h4><div class="manual-row"><input type="text" id="otherManualName" placeholder="Other manual name"><input type="text" id="otherManualCopies" placeholder="# of copies"><input type="text" id="otherManualLocation" placeholder="Location"></div></div></div><div class="form-field full-width"><label>Notes</label><textarea id="notes" rows="2"></textarea></div></div><button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Equipment</button></form></div></div>
+
+<!-- Manage Users Modal - Removed descriptive labelings exactly as requested -->
+<div id="manageUsersModal" class="modal"><div class="modal-content"><div class="modal-header"><span><i class="fas fa-users-cog"></i> Manage Users</span><span class="close-modal closeUsersModal">&times;</span></div><div style="margin-bottom:20px;"><h4>Add New User</h4><div class="form-grid"><div class="form-field"><label>Username *</label><input type="text" id="newUsername" placeholder="e.g., nurse_john"></div><div class="form-field"><label>Email *</label><input type="email" id="newEmail" placeholder="user@hospital.com"></div><div class="form-field"><label>Role *</label><select id="newUserRole"><option value="admin">System Admin</option><option value="biomed">Biomedical Staff</option><option value="staff">Hospital Staff</option></select></div><div class="form-field"><label>Password *</label><input type="text" id="newPassword" placeholder="initial password" value="123"></div></div><button class="action-btn" id="addUserBtn" style="background:#1e3c72; margin-top:10px;"><i class="fas fa-user-plus"></i> Add User</button></div><hr><h4>Existing Users</h4><table class="users-list" id="usersTable"><thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Add Equipment Perm</th><th>Actions</th></tr></thead><tbody id="usersTableBody"></tbody></table><div class="contact-admin" style="margin-top:15px;"><i class="fas fa-info-circle"></i> Note: System accounts cannot be deactivated. Biomed users can be granted/revoked permission to add equipment. Inactive users cannot login.</div></div></div>
+
+<div id="maintenanceModal" class="modal"><div class="modal-content"><div class="modal-header"><span><i class="fas fa-tools"></i> Maintenance Manager</span><span class="close-modal" id="closeMaintenanceModal">&times;</span></div><div style="margin-bottom:20px;"><label style="font-weight:600;">Select Equipment:</label><select id="maintenanceEquipSelect" style="width:100%; padding:12px; border-radius:12px; margin-top:8px;"></select></div><div id="maintenanceHistory"></div><div style="margin-top:20px; border-top:2px solid #e2e8f0; padding-top:20px;"><h4><i class="fas fa-plus-circle"></i> Add New Maintenance Record</h4><div class="form-grid"><div class="form-field"><label>Maintenance Date *</label><input type="date" id="maintenanceDate"></div><div class="form-field"><label>Next Due Date</label><input type="date" id="maintenanceNextDue"></div><div class="form-field"><label>Performed By</label><input type="text" id="maintenancePerformedBy" placeholder="Technician/Service"></div><div class="form-field"><label>Maintenance Type</label><select id="maintenanceTypeSelect"><option>Routine Check</option><option>Preventive</option><option>Corrective Repair</option><option>Calibration</option><option>Major Overhaul</option></select></div><div class="form-field full-width"><label>Maintenance Notes</label><textarea id="maintenanceNotesField" rows="2" placeholder="Details..."></textarea></div></div><button class="btn-save" id="saveMaintenanceBtn"><i class="fas fa-save"></i> Save Maintenance Record</button></div></div></div>
+<div id="overallReportModal" class="modal"><div class="modal-content"><div class="modal-header"><span><i class="fas fa-chart-line"></i> Overall Inventory Report</span><span class="close-modal" id="closeOverallReportModal">&times;</span></div><textarea id="overallReportContent" rows="18" style="font-family: monospace; width:100%; padding:12px; border-radius:12px;"></textarea><div class="report-actions"><button class="btn-save" id="saveOverallReportBtn">Save</button><button class="btn-save" id="downloadOverallReportBtn" style="background:#11998e;">Download</button></div></div></div>
+<div id="individualReportModal" class="modal"><div class="modal-content"><div class="modal-header"><span><i class="fas fa-file-alt"></i> Equipment Report</span><span class="close-modal" id="closeIndividualReportModal">&times;</span></div><div id="individualReportInfo"></div><textarea id="individualReportContent" rows="15" style="font-family: monospace; width:100%; padding:12px;"></textarea><div class="report-actions"><button class="btn-save" id="saveIndividualReportBtn">Save</button><button class="btn-save" id="downloadIndividualReportBtn" style="background:#11998e;">Download</button></div></div></div>
+
+<script>
+    let equipmentDB = [];
+    let currentUser = { role: null, username: null, canAddEquipment: false };
+    let currentIndividualReportId = null;
+    let filters = { search: "", equipmentType: "", location: "", condition: "", lifecycleStatus: "active" };
+    
+    let customUsers = []; // each: { username, email, role, password, active: 1 or 0, canAddEquipment: true/false }
+
+    function loadUsersFromStorage() {
+        let stored = localStorage.getItem("hospital_custom_users_v2");
+        if(stored) customUsers = JSON.parse(stored);
+        else customUsers = [];
+        customUsers.forEach(u => { 
+            if(u.active === undefined) u.active = 1; 
+            if(u.canAddEquipment === undefined) u.canAddEquipment = false;
+        });
+        saveUsersToStorage();
+    }
+    function saveUsersToStorage() { localStorage.setItem("hospital_custom_users_v2", JSON.stringify(customUsers)); }
+    
+    const BASE_CREDENTIALS = {
+        admin: { password: "123", roleName: "System Admin", active: 1, isBase: true, canAddEquipment: true },
+        biomed: { password: "123", roleName: "Biomedical Staff", active: 1, isBase: true, canAddEquipment: false },
+        staff: { password: "123", roleName: "Hospital Staff", active: 1, isBase: true, canAddEquipment: false }
+    };
+    
+    function authenticateUser(username, password) {
+        if (!username || !password) return { success: false, role: null, canAddEquipment: false };
+        if (BASE_CREDENTIALS[username] && password === BASE_CREDENTIALS[username].password) {
+            return { success: true, role: username, canAddEquipment: BASE_CREDENTIALS[username].canAddEquipment };
+        }
+        let customUser = customUsers.find(u => u.username === username && u.password === password && u.active === 1);
+        if(customUser) return { success: true, role: customUser.role, canAddEquipment: customUser.canAddEquipment || false };
+        return { success: false, role: null, canAddEquipment: false };
+    }
+
+    function saveToLocal() { localStorage.setItem("hospital_inv_db_v6", JSON.stringify(equipmentDB)); }
+
+    function initializeData() {
+        let stored = localStorage.getItem("hospital_inv_db_v6");
+        if (stored && JSON.parse(stored).length > 0) {
+            equipmentDB = JSON.parse(stored);
+            let needsUpdate = false;
+            equipmentDB.forEach(e => { if(!e.lifecycleStatus) { e.lifecycleStatus = "Active"; needsUpdate = true; } });
+            if(needsUpdate) saveToLocal();
+        } else {
+            equipmentDB = [
+                { id: 101, invCode: "VENT-1001", eqType: "Ventilator", manufacturer: "Medtronic", model: "PB980", serialNumber: "SN-V1001", countryOrigin: "USA", yearMfg: 2022, powerReq: "220V", condition: "Operable and in service", location: "Block A / Room 204", equipUsers: "Doctors", spareParts: "Yes", discard: "No", notes: "", customReport: "", lifecycleStatus: "Active", maintenanceHistory: [{ date: "2024-10-15", nextDue: "2025-04-15", performedBy: "Biomed Team", type: "Routine Check", notes: "Calibrated" }], manualAvailability: { userManual: { name: "User Manual", copies: "1", location: "ICU Cabinet" }, serviceManual: { name: "Service Manual", copies: "1", location: "Biomed Office" }, otherManual: { name: "", copies: "", location: "" } } },
+                { id: 102, invCode: "USG-2002", eqType: "Ultrasound", manufacturer: "GE Healthcare", model: "Voluson S8", serialNumber: "SN-U2002", countryOrigin: "USA", yearMfg: 2021, powerReq: "110V", condition: "Operable and in service", location: "Block C / Room 12", equipUsers: "Radiologists", spareParts: "Yes", discard: "No", notes: "", customReport: "", lifecycleStatus: "Active", maintenanceHistory: [{ date: "2024-09-20", nextDue: "2025-03-20", performedBy: "GE Service", type: "Preventive", notes: "Probe inspection" }], manualAvailability: { userManual: { name: "User Manual", copies: "2", location: "Radiology Desk" }, serviceManual: { name: "Service Manual", copies: "1", location: "Tech Room" }, otherManual: { name: "", copies: "", location: "" } } },
+                { id: 103, invCode: "DEF-3003", eqType: "Defibrillator", manufacturer: "Zoll", model: "X Series", serialNumber: "SN-D3003", countryOrigin: "USA", yearMfg: 2023, powerReq: "220V", condition: "Needs maintenance", location: "ER Block / Room 5", equipUsers: "Nurses", spareParts: "Yes", discard: "No", notes: "", customReport: "", lifecycleStatus: "Active", maintenanceHistory: [{ date: "2024-08-10", nextDue: "2024-11-10", performedBy: "Biomed", type: "Repair", notes: "Battery issue" }], manualAvailability: { userManual: { name: "User Manual", copies: "1", location: "ER Storage" }, serviceManual: { name: "Service Manual", copies: "0", location: "" }, otherManual: { name: "", copies: "", location: "" } } },
+                { id: 104, invCode: "MRI-4004", eqType: "MRI Scanner", manufacturer: "Siemens", model: "Magnetom Vida", serialNumber: "SN-M4004", countryOrigin: "Germany", yearMfg: 2020, powerReq: "220V", condition: "Needs maintenance", location: "Imaging Block / Suite 101", equipUsers: "Radiologists", spareParts: "Yes", discard: "No", notes: "", customReport: "", lifecycleStatus: "Decommissioned", maintenanceHistory: [{ date: "2024-07-05", nextDue: "2024-12-05", performedBy: "Siemens", type: "Overhaul", notes: "Cooling check needed" }], manualAvailability: { userManual: { name: "User Manual", copies: "2", location: "Control Room" }, serviceManual: { name: "Service Manual", copies: "1", location: "Biomed Dept" }, otherManual: { name: "Calibration Guide", copies: "1", location: "MRI Suite" } } },
+                { id: 105, invCode: "XRAY-5005", eqType: "X-Ray", manufacturer: "Philips", model: "DigitalDiagnost", serialNumber: "SN-X5005", countryOrigin: "Netherlands", yearMfg: 2021, powerReq: "220V", condition: "Operable and in service", location: "Radiology Block / Room 8", equipUsers: "Radiographers", spareParts: "Yes", discard: "No", notes: "", customReport: "", lifecycleStatus: "Disposed", maintenanceHistory: [{ date: "2024-10-01", nextDue: "2025-04-01", performedBy: "Philips", type: "Calibration", notes: "Passed" }], manualAvailability: { userManual: { name: "User Manual", copies: "3", location: "X-Ray Library" }, serviceManual: { name: "Service Manual", copies: "1", location: "Engineering Office" }, otherManual: { name: "Safety Guide", copies: "2", location: "X-Ray Dept" } } }
+            ];
+            saveToLocal();
+        }
+    }
+
+    function getStatusColor(status) {
+        if(status === 'Active') return '#e6f7ff';
+        if(status === 'Decommissioned') return '#fff7e6';
+        return '#f9f9f9';
+    }
+
+    function renderUserTable() {
+        if(!document.getElementById("usersTableBody")) return;
+        let tbody = document.getElementById("usersTableBody");
+        let allBuiltIn = Object.entries(BASE_CREDENTIALS).map(([username, info]) => ({ username, email: `${username}@hospital.com`, role: username, password: info.password, isBase: true, active: 1, canAddEquipment: info.canAddEquipment }));
+        let combined = [...allBuiltIn, ...customUsers];
+        tbody.innerHTML = combined.map(u => {
+            let roleDisplay = u.role === 'admin' ? '👑 Admin' : (u.role === 'biomed' ? '🔧 Biomed' : '🏥 Staff');
+            let statusBadge = u.active === 1 ? '<span class="status-badge-user status-active"><i class="fas fa-check-circle"></i> Active</span>' : '<span class="status-badge-user status-inactive"><i class="fas fa-ban"></i> Inactive</span>';
+            let permBadge = (u.canAddEquipment === true) ? '<span class="perm-badge perm-yes"><i class="fas fa-check"></i> Yes</span>' : '<span class="perm-badge perm-no"><i class="fas fa-times"></i> No</span>';
+            let isSelf = (u.username === currentUser.username && !u.isBase);
+            let isBaseSystem = u.isBase === true;
+            let actions = '';
+            if(!isBaseSystem) {
+                actions = `<button class="action-user-btn toggle-status" data-username="${escapeHtml(u.username)}" data-action="toggleStatus"><i class="fas fa-power-off"></i> ${u.active === 1 ? 'Deactivate' : 'Activate'}</button>`;
+                if(u.role === 'biomed') {
+                    actions += `<button class="action-user-btn toggle-perm" data-username="${escapeHtml(u.username)}" data-action="togglePerm"><i class="fas fa-key"></i> ${u.canAddEquipment ? 'Revoke' : 'Grant'}</button>`;
+                } else {
+                    actions += `<span style="color:#aaa; font-size:0.7rem; margin-left:6px;">—</span>`;
+                }
+                if(isSelf) actions += `<span style="margin-left:8px; font-size:0.7rem; color:#999;">(You)</span>`;
+            } else {
+                actions = '<span class="perm-badge perm-no">System</span>';
+            }
+            return `<tr><td><i class="fas fa-user-circle"></i> ${escapeHtml(u.username)}</td><td>${escapeHtml(u.email || '-')}</td><td class="role-display">${roleDisplay}</td><td>${statusBadge}</td><td>${permBadge}</td><td>${actions}</td></tr>`;
+        }).join('');
+        
+        document.querySelectorAll('.action-user-btn.toggle-status').forEach(btn => btn.addEventListener('click', (e) => {
+            let username = btn.getAttribute('data-username');
+            let user = customUsers.find(u => u.username === username);
+            if(user && user.username !== currentUser.username) { 
+                user.active = user.active === 1 ? 0 : 1; 
+                saveUsersToStorage(); 
+                renderUserTable(); 
+                alert(`User ${username} status updated to ${user.active === 1 ? 'Active' : 'Inactive'}.`); 
+            }
+            else if(user && user.username === currentUser.username) alert("Cannot change your own status.");
+        }));
+        
+        document.querySelectorAll('.action-user-btn.toggle-perm').forEach(btn => btn.addEventListener('click', (e) => {
+            let username = btn.getAttribute('data-username');
+            let user = customUsers.find(u => u.username === username);
+            if(user && user.role === 'biomed') { 
+                user.canAddEquipment = !user.canAddEquipment; 
+                saveUsersToStorage(); 
+                renderUserTable(); 
+                alert(`User ${username} add equipment permission: ${user.canAddEquipment ? 'GRANTED' : 'REVOKED'}.`); 
+            }
+        }));
+    }
+
+    function openManageUsersModal() { if(currentUser.role !== 'admin') { alert("Only admin can manage users."); return; } renderUserTable(); document.getElementById("manageUsersModal").style.display = "flex"; }
+    document.getElementById("addUserBtn")?.addEventListener("click", () => { 
+        let username = document.getElementById("newUsername").value.trim(); 
+        let email = document.getElementById("newEmail").value.trim(); 
+        let role = document.getElementById("newUserRole").value; 
+        let password = document.getElementById("newPassword").value.trim(); 
+        if(!username || !email || !password) { alert("All fields required"); return; } 
+        if(customUsers.some(u => u.username === username) || BASE_CREDENTIALS[username]) { alert("Username already exists."); return; } 
+        customUsers.push({ username, email, role, password, active: 1, canAddEquipment: false }); 
+        saveUsersToStorage(); 
+        alert("User added successfully"); 
+        document.getElementById("newUsername").value=""; 
+        document.getElementById("newEmail").value=""; 
+        document.getElementById("newPassword").value="123"; 
+        renderUserTable(); 
+    });
+
+    function updateActionButtons(){
+        let container=document.getElementById("actionButtons");
+        const canAdd = (currentUser.role === 'admin') || (currentUser.role === 'biomed' && currentUser.canAddEquipment === true);
+        if(currentUser.role==='admin') {
+            container.innerHTML=`<button class="action-btn" id="addEquipmentBtn"><i class="fas fa-plus"></i> Add Equipment</button><button class="action-btn maintenance-btn" id="openMaintenancePanelBtn"><i class="fas fa-tools"></i> Maintenance Manager</button><button class="action-btn report-btn" id="overallReportBtn"><i class="fas fa-chart-line"></i> Overall Report</button><button class="action-btn users-btn" id="manageUsersBtn"><i class="fas fa-users-cog"></i> Manage Users</button>`;
+            document.getElementById("manageUsersBtn")?.addEventListener("click", openManageUsersModal);
+        } else if(currentUser.role==='biomed') {
+            let addBtnHtml = canAdd ? `<button class="action-btn" id="addEquipmentBtn"><i class="fas fa-plus"></i> Add Equipment</button>` : '';
+            container.innerHTML=`${addBtnHtml}<button class="action-btn maintenance-btn" id="openMaintenancePanelBtn"><i class="fas fa-tools"></i> Maintenance Manager</button><button class="action-btn report-btn" id="overallReportBtn"><i class="fas fa-chart-line"></i> Overall Report</button>`;
+        } else {
+            container.innerHTML=`<button class="action-btn report-btn" id="overallReportBtn"><i class="fas fa-chart-line"></i> Overall Report</button>`;
+        }
+        if(document.getElementById("addEquipmentBtn")) document.getElementById("addEquipmentBtn").onclick=()=>{ resetEquipmentForm(); document.getElementById("equipmentModal").style.display="flex"; };
+        if(document.getElementById("openMaintenancePanelBtn")) document.getElementById("openMaintenancePanelBtn").onclick=()=>openMaintenanceManager();
+        if(document.getElementById("overallReportBtn")) document.getElementById("overallReportBtn").onclick=openOverallReport;
+    }
+
+    function getConditionColor(c) { if(c==='Operable and in service') return '#d4edda'; if(c==='Needs maintenance') return '#fff3cd'; if(c==='Not repairable') return '#f8d7da'; return '#e2e3e5'; }
+    function updateFilterOptions() { let types = [...new Set(equipmentDB.map(e=>e.eqType).filter(t=>t))].sort(); let locations = [...new Set(equipmentDB.map(e=>e.location).filter(l=>l))].sort(); document.getElementById("filterEquipmentType").innerHTML = '<option value="">All Equipment Types</option>' + types.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join(''); document.getElementById("filterLocation").innerHTML = '<option value="">All Locations</option>' + locations.map(l=>`<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`).join(''); }
+    
+    function applyFilters() { 
+        return equipmentDB.filter(eq=>{ 
+            if(filters.lifecycleStatus === "active" && eq.lifecycleStatus !== "Active") return false;
+            if(filters.search && !`${eq.invCode} ${eq.eqType} ${eq.manufacturer||''} ${eq.model||''} ${eq.serialNumber||''} ${eq.location}`.toLowerCase().includes(filters.search.toLowerCase())) return false; 
+            if(filters.equipmentType && eq.eqType!==filters.equipmentType) return false; 
+            if(filters.location && eq.location!==filters.location) return false; 
+            if(filters.condition && eq.condition!==filters.condition) return false; 
+            return true; 
+        }); 
+    }
+    
+    function updateStats(filtered) { document.getElementById("statTotal").innerText = equipmentDB.length; document.getElementById("statOperable").innerText = equipmentDB.filter(e=>e.condition==="Operable and in service" && e.lifecycleStatus === "Active").length; document.getElementById("statMaintenance").innerText = equipmentDB.filter(e=>e.condition==="Needs maintenance" && e.lifecycleStatus === "Active").length; document.getElementById("statLocations").innerText = new Set(equipmentDB.filter(e=>e.lifecycleStatus === "Active").map(e=>e.location)).size; }
+    
+    function renderTable() { 
+        let filtered = applyFilters(); 
+        updateStats(filtered); 
+        let tbody = document.getElementById("tableBody"); 
+        if(!filtered.length){ tbody.innerHTML='<tr><td colspan="9" style="text-align:center; padding:40px;">No equipment found</td></tr>'; return; } 
+        tbody.innerHTML = filtered.map(eq=>`<tr><td><strong>${escapeHtml(eq.invCode)}</strong></td><td>${escapeHtml(eq.eqType)}</td><td>${escapeHtml(eq.manufacturer||'-')}</td><td>${escapeHtml(eq.model||'-')}</td><td><small>${escapeHtml(eq.serialNumber||'-')}</small></td><td><span class="condition-badge" style="background:${getConditionColor(eq.condition)}">${eq.condition}</span></td><td><i class="fas fa-map-marker-alt"></i> ${escapeHtml(eq.location)}</td><td><span class="status-badge" style="background:${getStatusColor(eq.lifecycleStatus)}; color:#2d3748;">${eq.lifecycleStatus}</span></td><td class="action-icons">${currentUser.role==='admin'?`<i class="fas fa-edit" data-id="${eq.id}" title="Edit"></i>`:''}${(currentUser.role==='admin'||currentUser.role==='biomed')?`<i class="fas fa-tools" data-id="${eq.id}" title="Maintenance"></i>`:''}<i class="fas fa-file-alt" data-id="${eq.id}" title="Report"></i></td></tr>`).join('');
+        document.querySelectorAll('.action-icons i').forEach(icon=>{ icon.addEventListener('click',(e)=>{ let id=parseInt(icon.getAttribute('data-id')); if(icon.classList.contains('fa-edit')) openEditModal(id); else if(icon.classList.contains('fa-tools')) openMaintenanceManager(id); else if(icon.classList.contains('fa-file-alt')) openIndividualReport(id);});}); }
+    
+    function openEditModal(id){ if(currentUser.role!=='admin'){ alert("Only Admin can edit."); return; } let eq=equipmentDB.find(e=>e.id===id); if(!eq) return; document.getElementById("editId").value=eq.id; document.getElementById("invCode").value=eq.invCode; document.getElementById("eqType").value=eq.eqType; document.getElementById("manufacturer").value=eq.manufacturer||''; document.getElementById("model").value=eq.model||''; document.getElementById("serialNumber").value=eq.serialNumber||''; document.getElementById("countryOrigin").value=eq.countryOrigin||''; document.getElementById("yearMfg").value=eq.yearMfg||''; document.getElementById("powerReq").value=eq.powerReq||'220V'; document.getElementById("condition").value=eq.condition; document.getElementById("lifecycleStatus").value=eq.lifecycleStatus || "Active"; document.getElementById("location").value=eq.location; document.getElementById("equipUsers").value=eq.equipUsers||''; document.getElementById("spareParts").value=eq.spareParts||'No'; document.getElementById("discard").value=eq.discard||'No'; document.getElementById("notes").value=eq.notes||''; let man=eq.manualAvailability||{}; document.getElementById("userManualName").value=man.userManual?.name||"User Manual"; document.getElementById("userManualCopies").value=man.userManual?.copies||""; document.getElementById("userManualLocation").value=man.userManual?.location||""; document.getElementById("serviceManualName").value=man.serviceManual?.name||"Service Manual"; document.getElementById("serviceManualCopies").value=man.serviceManual?.copies||""; document.getElementById("serviceManualLocation").value=man.serviceManual?.location||""; document.getElementById("otherManualName").value=man.otherManual?.name||""; document.getElementById("otherManualCopies").value=man.otherManual?.copies||""; document.getElementById("otherManualLocation").value=man.otherManual?.location||""; document.getElementById("modalTitle").innerHTML='<i class="fas fa-edit"></i> Edit Equipment'; document.getElementById("equipmentModal").style.display="flex"; }
+    function openMaintenanceManager(equipId=null){ if(!(currentUser.role==='admin'||currentUser.role==='biomed')){ alert("Access Denied."); return; } let select=document.getElementById("maintenanceEquipSelect"); select.innerHTML=equipmentDB.map(eq=>`<option value="${eq.id}" ${equipId===eq.id?'selected':''}>${eq.invCode} - ${eq.eqType}</option>`).join(''); loadMaintenanceHistory(equipId||parseInt(select.value)); document.getElementById("maintenanceModal").style.display="flex"; }
+    function loadMaintenanceHistory(equipId){ let eq=equipmentDB.find(e=>e.id===equipId); if(!eq) return; let div=document.getElementById("maintenanceHistory"); if(!eq.maintenanceHistory?.length) div.innerHTML="<p>No records.</p>"; else div.innerHTML=`<h4>History</h4>`+eq.maintenanceHistory.map(m=>`<div class="maintenance-log-entry"><strong>📅 ${m.date}</strong> | ${m.type}<br><small>🔧 ${m.performedBy}</small><br><small>📝 ${m.notes}</small><br><small>Next Due: ${m.nextDue||'N/A'}</small></div>`).join(''); document.getElementById("maintenanceDate").value=new Date().toISOString().split('T')[0]; document.getElementById("maintenancePerformedBy").value=currentUser.username||"Staff"; }
+    function saveMaintenanceRecord(){ let eq=equipmentDB.find(e=>e.id===parseInt(document.getElementById("maintenanceEquipSelect").value)); if(!eq) return; let rec={ date:document.getElementById("maintenanceDate").value, nextDue:document.getElementById("maintenanceNextDue").value, performedBy:document.getElementById("maintenancePerformedBy").value, type:document.getElementById("maintenanceTypeSelect").value, notes:document.getElementById("maintenanceNotesField").value }; if(!rec.date){ alert("Date required"); return; } if(!eq.maintenanceHistory) eq.maintenanceHistory=[]; eq.maintenanceHistory.push(rec); if(eq.condition==="Needs maintenance") eq.condition="Operable and in service"; saveToLocal(); loadMaintenanceHistory(eq.id); renderTable(); alert("Maintenance saved"); }
+    function openIndividualReport(id){ let eq=equipmentDB.find(e=>e.id===id); if(!eq) return; currentIndividualReportId=id; let maintText=(eq.maintenanceHistory||[]).map(m=>`  • ${m.date} | ${m.type} | ${m.performedBy} | Next: ${m.nextDue||'N/A'}\n    Notes: ${m.notes}`).join("\n")||"None"; let defaultReport=`=== EQUIPMENT REPORT ===\nID: ${eq.invCode}\nType: ${eq.eqType}\nLocation: ${eq.location}\nCondition: ${eq.condition}\nLifecycle Status: ${eq.lifecycleStatus}\n--- Maintenance History ---\n${maintText}`; document.getElementById("individualReportContent").value=eq.customReport||defaultReport; document.getElementById("individualReportInfo").innerHTML=`<strong>${eq.invCode} - ${eq.eqType}</strong><br><small>${eq.location}</small>`; document.getElementById("individualReportModal").style.display="flex"; }
+    function saveIndividualReport(){ if(currentIndividualReportId){ let eq=equipmentDB.find(e=>e.id===currentIndividualReportId); if(eq){ eq.customReport=document.getElementById("individualReportContent").value; saveToLocal(); alert("Report saved"); } } }
+    function downloadIndividualReport(){ let blob=new Blob([document.getElementById("individualReportContent").value],{type:"text/plain"}); let a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="report.txt"; a.click(); }
+    function openOverallReport(){ let report = equipmentDB.map(e=>`${e.invCode} | ${e.eqType} | ${e.condition} | Status: ${e.lifecycleStatus} | Location: ${e.location}`).join("\n"); let stored=localStorage.getItem("overall_inventory_report")||`FULL INVENTORY REPORT\n${report}\nGenerated: ${new Date()}`; document.getElementById("overallReportContent").value=stored; document.getElementById("overallReportModal").style.display="flex"; }
+    function saveOverallReport(){ localStorage.setItem("overall_inventory_report", document.getElementById("overallReportContent").value); alert("Saved"); }
+    function downloadOverallReport(){ let blob=new Blob([document.getElementById("overallReportContent").value],{type:"text/plain"}); let a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="overall_report.txt"; a.click(); }
+    function resetEquipmentForm(){ document.getElementById("equipmentForm").reset(); document.getElementById("editId").value=""; document.getElementById("modalTitle").innerHTML='<i class="fas fa-plus-circle"></i> Register Equipment'; document.getElementById("lifecycleStatus").value="Active"; }
+    function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+    
+    document.getElementById("loginBtn").onclick = () => {
+        let username = document.getElementById("loginUsername").value.trim();
+        let password = document.getElementById("loginPassword").value.trim();
+        if (!username || !password) { document.getElementById("loginErrorMsg").innerHTML = "Username and password are required."; return; }
+        const authResult = authenticateUser(username, password);
+        if (!authResult.success) { document.getElementById("loginErrorMsg").innerHTML = "Invalid credentials or inactive account."; return; }
+        currentUser = { role: authResult.role, username: username, canAddEquipment: authResult.canAddEquipment };
+        initializeData(); loadUsersFromStorage();
+        document.getElementById("loginWrapper").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+        let displayRole = currentUser.role === 'admin' ? '👑 Admin' : (currentUser.role === 'biomed' ? '🔧 Biomed' : '🏥 Staff');
+        document.getElementById("userRoleDisplay").innerHTML = displayRole;
+        updateActionButtons(); updateFilterOptions(); renderTable();
+        filters = { search:"", equipmentType:"", location:"", condition:"", lifecycleStatus:"active" };
+        document.getElementById("globalSearchInput").value="";
+        document.getElementById("filterEquipmentType").value="";
+        document.getElementById("filterLocation").value="";
+        document.getElementById("filterCondition").value="";
+        document.getElementById("filterLifecycleStatus").value="active";
+        document.getElementById("loginErrorMsg").innerHTML = "";
+    };
+    document.getElementById("contactAdminLink").onclick = (e) => { e.preventDefault(); alert("📧 Contact hospital IT administrator at: admin@hospital-hims.com for account creation."); };
+    document.getElementById("logoutDashboardBtn").onclick = () => { currentUser = { role: null, username: null, canAddEquipment: false }; document.getElementById("dashboard").style.display = "none"; document.getElementById("loginWrapper").style.display = "flex"; };
+    document.querySelectorAll(".close-modal, #closeModalBtn, #closeMaintenanceModal, #closeOverallReportModal, #closeIndividualReportModal, .closeUsersModal").forEach(el => el && (el.onclick = () => { let modal = el.closest('.modal'); if(modal) modal.style.display = 'none'; }));
+    document.getElementById("saveMaintenanceBtn") && (document.getElementById("saveMaintenanceBtn").onclick = saveMaintenanceRecord);
+    document.getElementById("saveOverallReportBtn") && (document.getElementById("saveOverallReportBtn").onclick = saveOverallReport);
+    document.getElementById("downloadOverallReportBtn") && (document.getElementById("downloadOverallReportBtn").onclick = downloadOverallReport);
+    document.getElementById("saveIndividualReportBtn") && (document.getElementById("saveIndividualReportBtn").onclick = saveIndividualReport);
+    document.getElementById("downloadIndividualReportBtn") && (document.getElementById("downloadIndividualReportBtn").onclick = downloadIndividualReport);
+    document.getElementById("maintenanceEquipSelect") && (document.getElementById("maintenanceEquipSelect").onchange = (e) => loadMaintenanceHistory(parseInt(e.target.value)));
+    document.getElementById("globalSearchInput").oninput = (e) => { filters.search = e.target.value; renderTable(); };
+    document.getElementById("filterEquipmentType").onchange = (e) => { filters.equipmentType = e.target.value; renderTable(); };
+    document.getElementById("filterLocation").onchange = (e) => { filters.location = e.target.value; renderTable(); };
+    document.getElementById("filterCondition").onchange = (e) => { filters.condition = e.target.value; renderTable(); };
+    document.getElementById("filterLifecycleStatus").onchange = (e) => { filters.lifecycleStatus = e.target.value; renderTable(); };
+    document.getElementById("resetFiltersBtn").onclick = () => { filters = { search:"", equipmentType:"", location:"", condition:"", lifecycleStatus:"active" }; document.getElementById("globalSearchInput").value=""; document.getElementById("filterEquipmentType").value=""; document.getElementById("filterLocation").value=""; document.getElementById("filterCondition").value=""; document.getElementById("filterLifecycleStatus").value="active"; renderTable(); };
+    document.getElementById("equipmentForm").onsubmit = (e) => { e.preventDefault();
+        let id = document.getElementById("editId").value; let manualAvailability = { userManual: { name: document.getElementById("userManualName").value, copies: document.getElementById("userManualCopies").value, location: document.getElementById("userManualLocation").value }, serviceManual: { name: document.getElementById("serviceManualName").value, copies: document.getElementById("serviceManualCopies").value, location: document.getElementById("serviceManualLocation").value }, otherManual: { name: document.getElementById("otherManualName").value, copies: document.getElementById("otherManualCopies").value, location: document.getElementById("otherManualLocation").value } };
+        let formData = { invCode: document.getElementById("invCode").value, eqType: document.getElementById("eqType").value, manufacturer: document.getElementById("manufacturer").value, model: document.getElementById("model").value, serialNumber: document.getElementById("serialNumber").value, countryOrigin: document.getElementById("countryOrigin").value, yearMfg: document.getElementById("yearMfg").value, powerReq: document.getElementById("powerReq").value, condition: document.getElementById("condition").value, lifecycleStatus: document.getElementById("lifecycleStatus").value, location: document.getElementById("location").value, equipUsers: document.getElementById("equipUsers").value, spareParts: document.getElementById("spareParts").value, discard: document.getElementById("discard").value, notes: document.getElementById("notes").value, maintenanceHistory: [], customReport: "", manualAvailability };
+        if(id){ let idx = equipmentDB.findIndex(e => e.id == id); if(idx !== -1){ formData.id = parseInt(id); formData.maintenanceHistory = equipmentDB[idx].maintenanceHistory || []; formData.customReport = equipmentDB[idx].customReport || ""; equipmentDB[idx] = formData; } }
+        else{ formData.id = Date.now(); equipmentDB.push(formData); }
+        saveToLocal(); updateFilterOptions(); document.getElementById("equipmentModal").style.display = "none"; renderTable(); resetEquipmentForm();
+    };
+    window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = "none"; };
+    initializeData(); loadUsersFromStorage();
+</script>
+</body>
+</html>
